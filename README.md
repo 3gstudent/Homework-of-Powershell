@@ -1,5 +1,5 @@
 # Homework-of-Powershell
-powershell examples of my blog.
+powershell codes of my blog.
 
 ### Invoke-Enumeratefile.ps1
 
