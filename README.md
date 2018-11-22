@@ -14,3 +14,13 @@ This script will enumerate all the files you can take control over.
 First modify the registry and then create a file named Documents.library-ms in %appdata%\Microsoft\Windows\Start Menu\Programs\Accessories.
 
 It'll load c:\test\calc.dll on start-up.
+
+### Delete-Amcache.ps1
+
+This script loads the AMCache hive from the default Windows location and delete the seleted data.
+You can use Get-Amcache.ps1 to list the data of AMCache hive,then use this to delete the seleted data.
+The new AMCache hive will be saved as new.hve
+
+Get-Amcache.ps1:https://github.com/yoda66/GetAmCache/blob/master/Get-Amcache.ps1
+
+
