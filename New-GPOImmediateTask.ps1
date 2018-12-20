@@ -75,8 +75,6 @@ function New-GPOImmediateTask {
     Write-Host "[*] CommandArguments:"$CommandArguments
     Write-Host "[*] TaskModifiedDate:"$TaskModifiedDate
 
-
-
     Write-Host "[+] Start to backup the GPO"
     $Command1 = (Backup-Gpo -Name $GPODisplayName -Path "./")
     $Command1 | Out-Null
