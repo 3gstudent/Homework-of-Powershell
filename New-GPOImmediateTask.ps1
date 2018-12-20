@@ -2,6 +2,7 @@
 
 <#
     New-GPOImmediateTask.ps1
+    Version: v1.0(POC)
     Author:  3gstudent(@3gstudent)
     License: BSD 3-Clause
     Required Dependencies: None
