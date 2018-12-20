@@ -26,8 +26,10 @@ Get-Amcache.ps1:https://github.com/yoda66/GetAmCache/blob/master/Get-Amcache.ps1
 ### New-GPOImmediateTask.ps1
 
 Builds an 'Immediate' schtask to push out through a specified GPO.
-        Because I haven't found out how to register the 'Immediate' schtask yet.
-        So I have to backup the gpo,then modify the Backup.xml and gpreport.xml,and finally import the gpo.
+
+Because I haven't found out how to register the 'Immediate' schtask yet.
+        
+So I have to backup the gpo,then modify the Backup.xml and gpreport.xml,and finally import the gpo.
                 
         (1)Create a gpo
             new-gpo -name TestGPO | new-gplink -Target "dc=test,dc=com"
