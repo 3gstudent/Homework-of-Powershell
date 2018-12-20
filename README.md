@@ -23,11 +23,20 @@ The new AMCache hive will be saved as new.hve
 
 Get-Amcache.ps1:https://github.com/yoda66/GetAmCache/blob/master/Get-Amcache.ps1
 
-### New-GPOImmediateTask(a little change).ps1
+### New-GPOImmediateTask.ps1
 
-source：https://github.com/PowerShellMafia/PowerSploit/blob/26a0757612e5654b4f792b012ab8f10f95d391c9/Recon/PowerView.ps1
-
-I made a little change of $TaskXML in function New-GPOImmediateTask.
-
-The logon type is changed from "Run whether user is logged on or not"(S4U) to "Run only when user is logged on"(InteractiveToken).
-
+Builds an 'Immediate' schtask to push out through a specified GPO.
+        Because I haven't found out how to register the 'Immediate' schtask yet.
+        So I have to backup the gpo,then modify the Backup.xml and gpreport.xml,and finally import the gpo.
+                
+        (1)Create a gpo
+            new-gpo -name TestGPO | new-gplink -Target "dc=test,dc=com"
+        (2)Backup the gpo and get the BackupId and GPOId
+            $Backup = Backup-Gpo -Name TestGPO -Path C:\test1
+            $BackupId = $Backup.Id
+            $GPOId = $Backup.GpoId
+        (3)Use New-GPOImmediateTask.ps1 to modify the Backup.xml and gpreport.xml,and finally import the gpo.   
+            New-GPOImmediateTask -TaskName Debugging -BackupId 2dd64ebc-2b8b-403b-8b2d-8fd4c5711ba7 -BackupPath c:\test1 -GPOId 5fdfab7c-0bfe-4aec-983e-4d3db3003ce0 -SysPath '\\dc1.test.com\sysvol\test.com' -GPODisplayName TestGPO -CommandArguments '-c "123 | Out-File C:\test\debug.txt"'            
+        (4)You can force the client to refresh the gpo:
+            Invoke-GPUpdate -Computer "TEST\COMPUTER-01"
+           Or you can wait 90 minutes,the client's gpo will refresh automatically. 
