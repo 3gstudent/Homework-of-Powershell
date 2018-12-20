@@ -2,7 +2,6 @@
 
 <#
     New-GPOImmediateTask.ps1
-    Version: v1.0(POC)
     Author:  3gstudent(@3gstudent)
     License: BSD 3-Clause
     Required Dependencies: None
@@ -21,40 +20,25 @@ function New-GPOImmediateTask {
                 
         (1)Create a gpo
             new-gpo -name TestGPO | new-gplink -Target "dc=test,dc=com"
-        (2)Backup the gpo and get the BackupId and GPOId
-            $Backup = Backup-Gpo -Name TestGPO -Path C:\test1
-            $BackupId = $Backup.Id
-            $GPOId = $Backup.GpoId
-        (3)Use New-GPOImmediateTask.ps1 to modify the Backup.xml and gpreport.xml,and finally import the gpo.   
-            New-GPOImmediateTask -TaskName Debugging -BackupId 2dd64ebc-2b8b-403b-8b2d-8fd4c5711ba7 -BackupPath c:\test1 -GPOId 5fdfab7c-0bfe-4aec-983e-4d3db3003ce0 -SysPath '\\dc1.test.com\sysvol\test.com' -GPODisplayName TestGPO -CommandArguments '-c "123 | Out-File C:\test\debug.txt"'
-        (4)You can force the client to refresh the gpo:
+        (2)Use New-GPOImmediateTask.ps1 to backup the gpo into the current path,modify the Backup.xml and gpreport.xml and finally import the gpo       
+            New-GPOImmediateTask -TaskName Debugging -GPODisplayName TestGPO -SysPath '\\dc.test.com\sysvol\test.com' -CommandArguments '-c "123 | Out-File C:\test\debug.txt"'
+        (3)You can force the client to refresh the gpo:
             Invoke-GPUpdate -Computer "TEST\COMPUTER-01"
            Or you can wait 90 minutes,the client's gpo will refresh automatically. 
          
     .PARAMETER TaskName
-        Name for the schtask to create. Required.        
-    .PARAMETER BackupId
-        BackupId of the gpo. Required.
-    .PARAMETER GPOId
-        GPOId of the gpo. Required.
-        You can get BackupId and GPOId when you backup the gpo.
-        eg.
-            $Backup = Backup-Gpo -Name TestGPO -Path C:\test1
-            $BackupId = $Backup.Id
-            $GPOId = $Backup.GpoId                           
-    .PARAMETER BackupPath
-        Backup path of the gpo. Required.
-    .PARAMETER SysPath
-        '\\<DOMAIN>\SYSVOL\<DOMAIN>\Policies\<DOMAIN>'. Required.        
+        Name for the schtask to create. Required.
     .PARAMETER GPODisplayName
-        The GPO display name to build the task for. Required.
+        The GPO display name to build the task for. Required.            
+    .PARAMETER SysPath
+        '\\<DOMAIN>\SYSVOL\<DOMAIN>'. Required.        
     .PARAMETER Command
         The command to execute with the task, defaults to 'powershell'. Required.
     .PARAMETER CommandArguments
         The arguments to supply to the -Command being launched. Required.
                
     .EXAMPLE
-        PS> New-GPOImmediateTask -TaskName Debugging -BackupId 2dd64ebc-2b8b-403b-8b2d-8fd4c5711ba7 -BackupPath c:\test1 -GPOId 5fdfab7c-0bfe-4aec-983e-4d3db3003ce0 -SysPath '\\dc1.test.com\sysvol\test.com' -GPODisplayName TestGPO -CommandArguments '-c "123 | Out-File C:\test\debug.txt"'
+        PS> New-GPOImmediateTask -TaskName Debugging -GPODisplayName TestGPO -SysPath '\\dc.test.com\sysvol\test.com' -CommandArguments '-c "123 | Out-File C:\test\debug.txt"'
         Create an immediate schtask(Debugging) of the GPO(TestGPO) that executes the specified PowerShell arguments.
 #>
     [CmdletBinding()]
@@ -64,18 +48,6 @@ function New-GPOImmediateTask {
         [String]
         [ValidateNotNullOrEmpty()]
         $TaskName,
-
-        [String]
-        [ValidateNotNullOrEmpty()]
-        $BackupId,
-        
-        [String]
-        [ValidateNotNullOrEmpty()]
-        $BackupPath,        
-        
-        [String]
-        [ValidateNotNullOrEmpty()]
-        $GPOId,
 
         [String]
         [ValidateNotNullOrEmpty()]
@@ -96,34 +68,37 @@ function New-GPOImmediateTask {
     $TaskAuthor = 'NT AUTHORITY\System'
     $TaskModifiedDate = (Get-Date (Get-Date).AddDays(-30) -Format u).trim("Z")
  
-
     Write-Host "[*] TaskName:        "$TaskName
-    Write-Host "[*] BackupId:        "$BackupId 
-    Write-Host "[*] BackupPath:      "$BackupPath
-    Write-Host "[*] GPOId:           "$GPOId 
+    Write-Host "[*] GPODisplayName:  "$GPODisplayName
     Write-Host "[*] SysPath:         "$SysPath
     Write-Host "[*] Command:         "$Command
     Write-Host "[*] CommandArguments:"$CommandArguments
     Write-Host "[*] TaskModifiedDate:"$TaskModifiedDate
-    Write-Host "[*] GPODisplayName:  "$GPODisplayName
+
+
+
+    Write-Host "[+] Start to backup the GPO"
+    $Command1 = (Backup-Gpo -Name $GPODisplayName -Path "./")
+    $Command1 | Out-Null
+    $BackupId = $Command1.Id
+    $GpoId = $Command1.GpoId
+    $BackupFolder = ('{' + $Command1.Id + '}').ToUpper()
+    Write-Host "[*] BackupId:"$BackupId 
+    Write-Host "[*] GpoId:"$GpoId
    
-    Write-Host "--------------------------------------"
-    $BackupxmlPath = $BackupPath + '\{' + $BackupId + '}\Backup.xml'
-    Write-Host "[+] BackupxmlPath: "$BackupxmlPath
-    
-    $GpreportPath = $BackupPath + '\{' + $BackupId + '}\gpreport.xml'
-    Write-Host "[+] GpreportPath : "$GpreportPath
-    Write-Host "--------------------------------------"
-           
     Write-Host "[+] Start to modify Backup.xml"
-       
+
+    $BackupxmlPath = "./" + $BackupFolder + "/Backup.xml"
+    Write-Host "[*] BackupxmlPath: "(Resolve-Path $BackupxmlPath).Path
+     
+    $GpreportPath = "./" + $BackupFolder + "/gpreport.xml"
+                
     $Content1 = Get-Content $BackupxmlPath
     
     $String1 = "<UserExtensionGuids/>"
     $String2 = "<UserExtensionGuids><![CDATA[[{00000000-0000-0000-0000-000000000000}{CAB54552-DEEA-4691-817E-ED4A4D1AFC72}][{AADCED64-746C-4633-A97C-D61349046527}{CAB54552-DEEA-4691-817E-ED4A4D1AFC72}]]]></UserExtensionGuids>"
   
-    $Content1 = $Content1.replace($String1,$String2) 
-    
+    $Content1 = $Content1.replace($String1,$String2)    
     
     $String3 = 'bkp:DescName="Unknown Extension"><FSObjectDir bkp:Path="%GPO_USER_FSPATH%\Preferences" bkp:SourceExpandedPath="\\dc.test.com\sysvol\test.com\Policies\{2DA44238-84D1-4AAC-A3A1-42FE8EB1B4BD}\User\Preferences" bkp:Location="DomainSysvol\GPO\User\Preferences"/><FSObjectDir bkp:Path="%GPO_USER_FSPATH%\Preferences\ScheduledTasks" bkp:SourceExpandedPath="\\dc.test.com\sysvol\test.com\Policies\{2DA44238-84D1-4AAC-A3A1-42FE8EB1B4BD}\User\Preferences\ScheduledTasks" bkp:Location="DomainSysvol\GPO\User\Preferences\ScheduledTasks"/><FSObjectFile bkp:Path="%GPO_USER_FSPATH%\Preferences\ScheduledTasks\ScheduledTasks.xml" bkp:SourceExpandedPath="\\dc.test.com\sysvol\test.com\Policies\{2DA44238-84D1-4AAC-A3A1-42FE8EB1B4BD}\User\Preferences\ScheduledTasks\ScheduledTasks.xml" bkp:Location="DomainSysvol\GPO\User\Preferences\ScheduledTasks\ScheduledTasks.xml"/></GroupPolicyExtension>'
     
@@ -132,11 +107,13 @@ function New-GPOImmediateTask {
     
     $Content1 = $Content1.replace('bkp:DescName="Unknown Extension"/>',$String3)
     
-    $Content1 | Set-Content -Encoding ASCII -Path $BackupxmlPath
-    Write-Host "[+] Success"   
+    $Content1 | Set-Content -Encoding ASCII -Path $BackupxmlPath   
                                      
     if(Test-Path $GpreportPath) 
     {
+        
+        Write-Host "[*] GpreportPath : "(Resolve-Path $GpreportPath).Path
+
         Write-Host "[+] Start to modify gpreport.xml"
         $Content2 = Get-Content $GpreportPath
               
@@ -222,19 +199,24 @@ function New-GPOImmediateTask {
                          
         $Content2 | Set-Content -Encoding Unicode -Path $GpreportPath
     }
-    
+    else
+    {
+        Write-Host "[!] There is no gpreport.xml,ignore to modify it"
+    }
     Write-Host "[+] Start to generate ScheduledTasks.xml"
 
     $TaskXML = '<?xml version="1.0" encoding="utf-8"?><ScheduledTasks clsid="{CC63F200-7309-4ba0-B154-A71CD118DBCC}"><ImmediateTaskV2 clsid="{9756B581-76EC-4169-9AFC-0CA8D43ADB5F}" name="'+$TaskName+'" image="0" changed="'+$TaskModifiedDate+'" uid="{'+$Newguid+'}" userContext="0" removePolicy="0"><Properties action="C" name="'+$TaskName+'" runAs="NT AUTHORITY\System" logonType="InteractiveToken"><Task version="1.3"><RegistrationInfo><Author>'+$TaskAuthor+'</Author><Description>'+$TaskDescription+'</Description></RegistrationInfo><Principals><Principal id="Author"><UserId>NT AUTHORITY\System</UserId><RunLevel>HighestAvailable</RunLevel><LogonType>InteractiveToken</LogonType></Principal></Principals><Settings><IdleSettings><Duration>PT10M</Duration><WaitTimeout>PT1H</WaitTimeout><StopOnIdleEnd>true</StopOnIdleEnd><RestartOnIdle>false</RestartOnIdle></IdleSettings><MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy><DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries><StopIfGoingOnBatteries>true</StopIfGoingOnBatteries><AllowHardTerminate>false</AllowHardTerminate><StartWhenAvailable>true</StartWhenAvailable><AllowStartOnDemand>false</AllowStartOnDemand><Enabled>true</Enabled><Hidden>true</Hidden><ExecutionTimeLimit>PT0S</ExecutionTimeLimit><Priority>7</Priority><DeleteExpiredTaskAfter>PT0S</DeleteExpiredTaskAfter><RestartOnFailure><Interval>PT15M</Interval><Count>3</Count></RestartOnFailure></Settings><Actions Context="Author"><Exec><Command>'+$Command+'</Command><Arguments>'+$CommandArguments+'</Arguments></Exec></Actions><Triggers><TimeTrigger><StartBoundary>%LocalTimeXmlEx%</StartBoundary><EndBoundary>%LocalTimeXmlEx%</EndBoundary><Enabled>true</Enabled></TimeTrigger></Triggers></Task></Properties></ImmediateTaskV2></ScheduledTasks>'
 
-    $TaskXMLParentPath = $BackupPath + '\{' + $BackupId + '}\DomainSysvol\GPO\User\Preferences\ScheduledTasks'    
+    $TaskXMLParentPath = './' + '/{' + $BackupId + '}/DomainSysvol/GPO/User/Preferences/ScheduledTasks'    
     md $TaskXMLParentPath -ErrorAction SilentlyContinue | Out-Null
-    $TaskXMLPath = $TaskXMLParentPath + '\ScheduledTasks.xml'
+    $TaskXMLPath = $TaskXMLParentPath + '/ScheduledTasks.xml'
     
     $TaskXML | Set-Content -Encoding ASCII -Path $TaskXMLPath
 
-    Write-Host "[+] Start to import the gpo"   
-    Import-GPO -BackupId $BackupId -TargetName $GPODisplayName -Path $BackupPath | Out-Null
+    Write-Host "[+] Start to import the gpo"
+    
+    Import-GPO -BackupId $BackupId -TargetName $GPODisplayName -Path (Resolve-Path './').Path | Out-Null
 
-    Write-Host "[+] All done."      
+    Write-Host "[+] All done." 
+    Write-Host "[+] Remember to clearn:"(Resolve-Path ("./" + $BackupFolder)).Path    
 }
