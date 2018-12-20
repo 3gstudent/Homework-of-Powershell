@@ -7,7 +7,7 @@
     Required Dependencies: None
     Optional Dependencies: None
     Reference:http://www.harmj0y.net/blog/redteaming/abusing-gpo-permissions/
-    Maybe I can solve the problem in harmj0y' blog.
+    Maybe I can solve the bug in harmj0y' blog.
     Need more test.
 #>
 
