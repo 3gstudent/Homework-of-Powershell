@@ -38,3 +38,8 @@ So I have to backup the gpo,then modify the Backup.xml and gpreport.xml,and fina
         (3)You can force the client to refresh the gpo:
             Invoke-GPUpdate -Computer "TEST\COMPUTER-01"
            Or you can wait 90 minutes,the client's gpo will refresh automatically. 
+
+### dns-dump.ps1
+
+Dump all the DNS records via AD LDAP and DNS query when you can access the Active Directory.
+
