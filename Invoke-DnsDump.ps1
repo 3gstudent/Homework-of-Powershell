@@ -1,4 +1,14 @@
 ##
+## Invoke-DnsDump.ps1
+##
+## Update：2019.4.28
+## 3gstudent
+## I modified the search parameters to use in the new environment.(Eg.Server2012R2)
+## Reference:https://github.com/mmessano/PowerShell/blob/master/dns-dump.ps1
+## .EXAMPLE
+## PS C:\> Powershell -ep bypass -f Invoke-DnsDump.ps1 -zone test.com
+## PS C:\> Powershell -ep bypass -f Invoke-DnsDump.ps1 -zone test.com -csv
+## ---------------------------------------------------------------------
 ## dns-dump.ps1
 ##
 ## Michael B. Smith
@@ -15,14 +25,6 @@
 ## for some clarification on the precise format of the
 ## dnsRecord attribute. See his blog post on the topic at
 ## http://www.highorbit.co.uk/?p=1097
-## ---------------------------------------------------------------------
-## Update：2019.4.28
-## 3gstudent
-## I modified the search parameters to use in the new environment.(Eg.Server2012R2)
-## Reference:https://github.com/mmessano/PowerShell/blob/master/dns-dump.ps1
-## .EXAMPLE
-## PS C:\> Powershell -ep bypass -f Invoke-DnsDump.ps1 -zone test.com
-## PS C:\> Powershell -ep bypass -f Invoke-DnsDump.ps1 -zone test.com -csv
 ##
 
 Param(
