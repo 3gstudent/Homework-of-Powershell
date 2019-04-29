@@ -599,7 +599,7 @@ Example 3:
 	$dn = "LDAP://"
 	if ($dc) { $dn += $dc + "/" }
 #	$dn += "DC=" + $zone + ",CN=MicrosoftDNS,CN=System," + $defaultNC
-  $dn += "DC=" + $zone + ",CN=MicrosoftDNS,DC=DomainDnsZones," + $defaultNC
+	$dn += "DC=" + $zone + ",CN=MicrosoftDNS,DC=DomainDnsZones," + $defaultNC
 	$obj = [ADSI]$dn
 	if ($obj.name)
 	{
