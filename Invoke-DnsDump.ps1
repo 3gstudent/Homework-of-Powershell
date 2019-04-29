@@ -3,7 +3,7 @@
 ##
 ## Update：2019.4.28
 ## 3gstudent
-## I modified the search parameters to use in the new environment.(Eg.Server2012R2)
+## I modified the search parameters to use in the new environment(Eg.Server2012R2).
 ## Reference:https://github.com/mmessano/PowerShell/blob/master/dns-dump.ps1
 ## .EXAMPLE
 ## PS C:\> Powershell -ep bypass -f Invoke-DnsDump.ps1 -zone test.com
