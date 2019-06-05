@@ -43,3 +43,13 @@ So I have to backup the gpo,then modify the Backup.xml and gpreport.xml,and fina
 
 Dump all the DNS records via AD LDAP and DNS query when you can access the Active Directory.
 
+### Invoke-OutlookPersistence.ps1
+
+This script allows you to use COM Object hijacking to maintain persistence.
+
+When the Outlook starts,it will load the backdoor DLL.
+
+This method is used by Turla in public.
+
+Learn from:https://www.welivesecurity.com/wp-content/uploads/2018/08/Eset-Turla-Outlook-Backdoor.pdf
+
