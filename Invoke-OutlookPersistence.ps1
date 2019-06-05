@@ -4,7 +4,7 @@ function Invoke-OutlookPersistence
 .SYNOPSIS
 This script allows you to use COM Object hijacking to maintain persistence.
 When the Outlook starts,it will load the backdoor DLL.
-This method is used by Turla in public.
+This method is first used by Turla in public.
 Learn from:https://www.welivesecurity.com/wp-content/uploads/2018/08/Eset-Turla-Outlook-Backdoor.pdf
 Code by: 3gstudent@3gstudent
 License: BSD 3-Clause
