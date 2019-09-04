@@ -53,3 +53,12 @@ This method is first used by Turla in public.
 
 Learn from:https://www.welivesecurity.com/wp-content/uploads/2018/08/Eset-Turla-Outlook-Backdoor.pdf
 
+### Get-AllExports.ps1
+
+Reference:
+
+https://github.com/FuzzySecurity/PowerShell-Suite/blob/master/Get-Exports.ps1
+
+This script is mainly used to automatically scan whether the export function of DLL in the specified directory contains "minidump" or not.
+
+
