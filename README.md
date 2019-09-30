@@ -61,4 +61,18 @@ https://github.com/FuzzySecurity/PowerShell-Suite/blob/master/Get-Exports.ps1
 
 This script is mainly used to automatically scan whether the export function of DLL in the specified directory contains "minidump" or not.
 
+### UsePSSessionToExportMailfromExchange.ps1
+
+This script will export the mail(.pst) from the Exchange server.
+
+First it will use PSSession to connect the Exchange server.
+
+Then it'll check the user's privilege.
+
+If the user is not in the "Mailbox Import Export",the script will add the user to it and reconnect the Exchange server.
+
+Next it will export the mail and save it.
+
+At last it will remove the user from the group and remove the PSSession.
+
 
