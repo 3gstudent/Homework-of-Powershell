@@ -69,7 +69,7 @@ First it will use PSSession to connect the Exchange server.
 
 Then it'll check the user's privilege.
 
-If the user is not in the "Mailbox Import Export",the script will add the user to it and reconnect the Exchange server.
+If the user is not in the "Mailbox Import Export",the script will add the user to it.
 
 Next it will export the mail and save it.
 
