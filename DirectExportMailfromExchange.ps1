@@ -4,7 +4,6 @@ function DirectExportMailfromExchange
 <#
 .SYNOPSIS
 This script will export the mail(.pst) from the Exchange server.
-
 The script needs to be executed on the Exchange server.
 
 Author: 3gstudent
