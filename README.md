@@ -81,3 +81,16 @@ This script will export the mail(.pst) from the Exchange server.
 
 The script needs to be executed on the Exchange server.
 
+### UsePSSessionToSearchMailfromExchange.ps1
+
+This script will search the mail from the Exchange server and export the results to the selected mailbox.
+
+First it will use PSSession to connect the Exchange server.
+
+Then it'll check the user's privilege.
+
+If the user is not in the "Mailbox Search",the script will add the user to it and reconnect the Exchange server.
+
+Next it will search the mail from the Exchange server and export the results to the selected mailbox.
+
+At last it will remove the user from the group and remove the PSSession.
