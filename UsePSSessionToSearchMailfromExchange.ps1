@@ -59,6 +59,7 @@ PS C:\> UsePSSessionToSearchMailfromExchange -User "administrator" -Password "Do
         [Parameter(Mandatory = $True)]
         [string]$TargetFolder
 	)
+    $Flag = 0
     Write-Host "[>] Start to Import-PSSession" 
     #Import-PSSession
     $Pass = ConvertTo-SecureString -AsPlainText $Password -Force
@@ -70,7 +71,8 @@ PS C:\> UsePSSessionToSearchMailfromExchange -User "administrator" -Password "Do
     #check user
     if(Get-ManagementRoleAssignment ("Mailbox Search-"+$User) -ErrorAction SilentlyContinue) 
     {
-    	Write-Host "[!] The specified user already exists.No need to add it to the group" 
+    	Write-Host "[!] The specified user already exists.No need to add it to the group"
+	$Flag = 1
     }
     else
     {
@@ -95,9 +97,13 @@ PS C:\> UsePSSessionToSearchMailfromExchange -User "administrator" -Password "Do
         Search-Mailbox -Identity $MailBox -SearchQuery $Filter -TargetMailbox $TargetMailbox -TargetFolder $TargetFolder -LogLevel Suppress| Out-Null
     }
     
-    Write-Host "[>] Start to remove user"
-    #Remove user
-    Get-ManagementRoleAssignment ("Mailbox Search-"+$User) |Remove-ManagementRoleAssignment -Confirm:$false
+    if ($Flag = 0)
+    {
+        Write-Host "[>] Start to remove user"
+        #Remove user
+        Get-ManagementRoleAssignment ("Mailbox Search-"+$User) |Remove-ManagementRoleAssignment -Confirm:$false
+    }
+    
     Write-Host "[>] Start to Remove-PSSession"
     #Remove PSSession
     Remove-PSSession $Session
