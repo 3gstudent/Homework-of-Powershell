@@ -6,7 +6,7 @@ function UsePSSessionToExportMailfromExchange
 This script will export the mail(.pst) from the Exchange server.
 First it will use PSSession to connect the Exchange server.
 Then it'll check the user's privilege.
-If the user is not in the "Mailbox Import Export",the script will add the user to it and reconnect the Exchange server.
+If the user is not in the "Mailbox Import Export",the script will add the user to it.
 Next it will export the mail and save it.
 At last it will remove the user from the group and remove the PSSession.
 
@@ -69,11 +69,6 @@ PS C:\> UsePSSessionToExportMailfromExchange -User "administrator" -Password "Do
     	Write-Host "[+] Start to add user" 
     	#Add user
     	New-ManagementRoleAssignment –Role "Mailbox Import Export" –User $User| Out-Null
-    	Write-Host "[>] Start to reconnect"
-    	#Reconnect
-    	Remove-PSSession $Session
-    	$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $ConnectionUri -Authentication Kerberos -Credential $Credential
-    	Import-PSSession $Session -AllowClobber| Out-Null
     }
     Write-Host "[+] Start to export mail" 
     #Export mail and do not save the export request
