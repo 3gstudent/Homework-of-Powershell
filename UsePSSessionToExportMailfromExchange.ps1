@@ -68,7 +68,7 @@ PS C:\> UsePSSessionToExportMailfromExchange -User "administrator" -Password "Do
     {
     	Write-Host "[+] Start to add user" 
     	#Add user
-    	New-ManagementRoleAssignment –Role "Mailbox Import Export" –User Administrator| Out-Null
+    	New-ManagementRoleAssignment –Role "Mailbox Import Export" –User $User| Out-Null
     	Write-Host "[>] Start to reconnect"
     	#Reconnect
     	Remove-PSSession $Session
