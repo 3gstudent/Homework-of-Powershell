@@ -75,4 +75,9 @@ Next it will export the mail and save it.
 
 At last it will remove the user from the group and remove the PSSession.
 
+### DirectExportMailfromExchange.ps1
+
+This script will export the mail(.pst) from the Exchange server.
+
+The script needs to be executed on the Exchange server.
 
