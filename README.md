@@ -94,3 +94,10 @@ If the user is not in the "Mailbox Search",the script will add the user to it an
 Next it will search the mail from the Exchange server and export the results to the selected mailbox.
 
 At last it will remove the user from the group and remove the PSSession.
+
+### DirectSearchMailfromExchange.ps1
+
+This script will search the mail from the Exchange server and export the results to the selected mailbox.
+
+The script needs to be executed on the Exchange server.
+
