@@ -101,3 +101,13 @@ This script will search the mail from the Exchange server and export the results
 
 The script needs to be executed on the Exchange server.
 
+### Invoke-DomainPasswordSprayOutsideTheDomain.ps1
+
+This module performs a password spray attack against users of a domain.
+    
+Note:
+    It only works outside the domain environment.
+
+When you are in the domain environment,you can use the original file([Invoke-DomainPasswordSpray](https://github.com/dafthack/DomainPasswordSpray)).
+    
+Source:https://github.com/dafthack/DomainPasswordSpray
